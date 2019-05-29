@@ -1,0 +1,49 @@
+<html>
+
+<head>
+    <script>
+        window.onload = function () {
+            var conn;
+            var msg = document.getElementById("msg");
+            var log = document.getElementById("log");
+            function appendLog(item) {
+                log.appendChild(item);
+            }
+            document.getElementById("form").onsubmit = function () {
+                if (!conn) {
+                    return false;
+                }
+                if (!msg.value) {
+                    return false;
+                }
+
+                var item = document.createElement("div");
+                item.innerText = msg.value;
+                appendLog(item);
+
+                conn.send(JSON.stringify({ "query": msg.value }));
+                msg.value = "";
+                return false;
+            };
+
+            conn = new WebSocket("ws://" + document.location.host + "/ws");
+            conn.onclose = function (evt) {
+                console.log(evt);
+            };
+            conn.onmessage = function (evt) {
+                var item = document.createElement("div");
+                item.innerText = evt.data;
+                appendLog(item);
+            };
+        };
+    </script>
+</head>
+
+<body>
+    <div id="log"></div>
+    <form id="form">
+        <input type="text" id="msg" />
+    </form>
+</body>
+
+</html>
