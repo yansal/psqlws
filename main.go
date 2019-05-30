@@ -94,8 +94,9 @@ func (s *server) do(ctx context.Context, query string) result {
 	for rows.Next() {
 		var scanvalues []interface{}
 		for i := range types {
+			scantype := types[i].ScanType()
 			scanvalues = append(scanvalues,
-				reflect.New(types[i].ScanType()).Interface())
+				reflect.New(reflect.PtrTo(scantype)).Interface())
 		}
 		if err := rows.Scan(scanvalues...); err != nil {
 			return result{Err: err.Error()}
